@@ -31,6 +31,20 @@ func main() {
 	renameFiles(files) // ignoring error, we don't care if the parent directory does not exist, we're already done
 }
 
+func renameFile(orig string) string {
+	camelName := strings.Replace(orig, string(orig[0]), strings.ToUpper(string(orig[0])), 1)
+	for x := 1; x < len(camelName); x++ { // start at one since first char is uppercased already
+		log.Printf("Working on char[%d] %s in %s", x, string(camelName[x]), camelName)
+		if len(camelName) > len(orig)*2 {
+			log.Fatalf("Something went wrong, do not continue on file %s", orig)
+		}
+		if strings.ContainsAny(string(camelName[x]), "ABCDEFGHIJKLMNOPQRSTUVWXYZ") && string(camelName[x-1]) != " " {
+			camelName = camelName[0:x] + " " + strings.ToUpper(string(camelName[x])) + camelName[x+1:]
+		}
+	}
+	return camelName
+}
+
 // Only returns an error if the current working directory could not be changed to the "parent" upon exit
 func renameFiles(fileList []os.FileInfo) error {
 	for _, fi := range fileList {
@@ -59,16 +73,7 @@ func renameFiles(fileList []os.FileInfo) error {
 			continue
 		}
 		orig := fi.Name()
-		camelName := strings.Replace(orig, string(orig[0]), strings.ToUpper(string(orig[0])), 1)
-		for x := 1; x < len(camelName); x++ { // start at one since first char is uppercased already
-			if len(camelName) > len(orig)*2 {
-				log.Printf("Working on char[%d] %s in %s", x, string(camelName[x]), camelName)
-				log.Fatalf("Something went wrong, do not continue on file %s", orig)
-			}
-			if strings.ContainsAny(string(camelName[x]), "ABCDEFGHIJKLMNOPQRSTUVWXYZ") && string(camelName[x-1]) != " " {
-				camelName = strings.Replace(camelName, string(camelName[x]), " "+strings.ToUpper(string(camelName[x])), 1)
-			}
-		}
+		camelName := renameFile(orig)
 		if camelName != orig {
 			if !pretend {
 				err := os.Rename(orig, camelName)
