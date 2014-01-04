@@ -34,7 +34,7 @@ func main() {
 func renameFile(orig string) string {
 	camelName := strings.Replace(orig, string(orig[0]), strings.ToUpper(string(orig[0])), 1)
 	for x := 1; x < len(camelName); x++ { // start at one since first char is uppercased already
-		log.Printf("Working on char[%d] %s in %s", x, string(camelName[x]), camelName)
+		//log.Printf("Working on char[%d] %s in %s", x, string(camelName[x]), camelName)
 		if len(camelName) > len(orig)*2 {
 			log.Fatalf("Something went wrong, do not continue on file %s", orig)
 		}
